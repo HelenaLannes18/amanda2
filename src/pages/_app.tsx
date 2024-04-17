@@ -3,7 +3,12 @@ import { ChakraProvider } from '@chakra-ui/react'
 import type { AppProps } from 'next/app'
 import "../styles/globals.css";
 import { Toaster } from 'react-hot-toast';
-import { ClerkProvider } from '@clerk/nextjs'
+import {
+  ClerkProvider,
+  SignedIn,
+  SignedOut,
+  RedirectToSignIn,
+} from "@clerk/nextjs";
 import { ptBR } from "@clerk/localizations";
 
 export default function App({ Component, pageProps: {
@@ -11,14 +16,20 @@ export default function App({ Component, pageProps: {
   ...pageProps
 } }: AppProps) {
   return (
-    <ChakraProvider theme={theme} resetCSS>
-      <ClerkProvider
-        localization={ptBR}>
+    <ClerkProvider
+      localization={ptBR}
+      {...pageProps}>
+      <ChakraProvider theme={theme} resetCSS>
         <Toaster position="top-right" />
-        <div className="h-full flex items-center justify-center">
+        <SignedIn>
           <Component {...pageProps} />
-        </div>
-      </ClerkProvider>
-    </ChakraProvider>
+        </SignedIn>
+        <SignedOut>
+          <div className="h-full flex items-center justify-center">
+            <RedirectToSignIn />
+          </div>
+        </SignedOut>
+      </ChakraProvider>
+    </ClerkProvider>
   )
 }
